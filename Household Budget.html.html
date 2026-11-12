@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#176b55">
+<title>My Household Budget</title>
+<style>
+:root{--green:#176b55;--green2:#e6f4ee;--ink:#20312c;--muted:#718078;--line:#e5ece8;--bg:#f4f7f5;--white:#fff;--orange:#a95c13;--orangebg:#fff2df;--red:#b33c3c;--shadow:0 8px 24px rgba(25,65,50,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:760px;margin:auto;min-height:100vh;padding-bottom:36px}
+header{background:linear-gradient(135deg,#145b49,#218365);color:white;padding:24px 18px 22px;border-radius:0 0 26px 26px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:13px;opacity:.85;letter-spacing:.08em;text-transform:uppercase;font-weight:700}.month{font-size:13px;background:#ffffff20;padding:8px 11px;border-radius:20px}.month-controls{display:flex;gap:7px;align-items:center;margin-top:13px;flex-wrap:wrap}.month-controls label{width:100%;font-size:12px;color:#ffffffdd;font-weight:650}.month-controls input{display:block;min-height:42px;cursor:pointer;appearance:auto;-webkit-appearance:auto;color-scheme:light;touch-action:manipulation}.month-controls input{min-width:0;flex:1;background:#ffffff;color:var(--ink);border:0;border-radius:10px;padding:9px;font:inherit}.month-controls button{background:#ffffff20;color:white;border:1px solid #ffffff55;border-radius:10px;padding:9px 12px;font-weight:700;font-size:12px}
+h1{font-size:25px;margin:12px 0 4px;letter-spacing:-.5px}.sub{font-size:13px;opacity:.85}
+.income-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:19px}.income-card{background:#ffffff18;border:1px solid #ffffff2b;padding:12px;border-radius:15px;cursor:pointer;transition:background .2s}.income-card:hover{background:#ffffff28}.income-card small{display:block;opacity:.8;font-size:11px}.income-card strong{display:block;font-size:21px;margin-top:3px}.salary-edit-btn{grid-column:1/-1;border:1px solid #ffffff66;background:#ffffff20;color:white;border-radius:11px;padding:9px 12px;font-size:12px;font-weight:700;text-align:center}
+main{padding:16px 14px}.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px}.metric{background:white;border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:var(--shadow)}.metric small{display:block;color:var(--muted);font-size:11px;line-height:1.3}.metric strong{display:block;font-size:20px;margin-top:5px}.metric.green strong{color:var(--green)}.metric.orange strong{color:var(--orange)}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px;gap:10px}.section-title h2{font-size:17px;margin:0}.section-title span{font-size:12px;color:var(--muted)}
+.tabs{display:flex;background:#e8efeb;padding:4px;border-radius:13px;gap:4px;margin:18px 0 14px}.tab{border:0;background:transparent;color:#5f7068;padding:10px 8px;border-radius:10px;flex:1;font-weight:700;font-size:13px}.tab.active{background:white;color:var(--green);box-shadow:0 2px 8px #183d2b14}
+.period-head{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:var(--shadow)}.period-head-row{display:flex;justify-content:space-between;align-items:center;gap:10px}.period-head h2{font-size:18px;margin:0}.salary{font-size:12px;color:var(--muted);margin-top:3px}.period-balance{text-align:right}.period-balance strong{display:block;font-size:19px;color:var(--green)}.period-balance small{font-size:10px;color:var(--muted)}
+.progress{height:8px;background:#edf1ef;border-radius:9px;overflow:hidden;margin-top:13px}.progress>div{height:100%;background:var(--green);border-radius:9px;width:0;transition:width .2s}
+.progress-label{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px}
+.group{background:white;border:1px solid var(--line);border-radius:16px;margin-top:12px;overflow:hidden;box-shadow:var(--shadow)}.group h3{font-size:13px;margin:0;padding:12px 14px;background:#f8faf9;border-bottom:1px solid var(--line);color:#53665d}
+.expense{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid #eff3f0;min-height:60px}.expense:last-child{border-bottom:0}.check{width:23px;height:23px;accent-color:var(--green);flex:0 0 auto}.expense-info{min-width:0;flex:1}.expense-name{font-size:14px;font-weight:650;display:block;overflow-wrap:anywhere}.expense-meta{font-size:11px;color:var(--muted);display:block;margin-top:2px}.expense.done .expense-name{text-decoration:line-through;color:#84938b}.amount{font-weight:700;font-size:14px;white-space:nowrap}.status{font-size:9px;font-weight:800;letter-spacing:.03em;border-radius:20px;padding:4px 7px;background:var(--orangebg);color:var(--orange);white-space:nowrap}.done .status{background:var(--green2);color:var(--green)}
+.iconbtn{border:0;background:transparent;color:#84938b;font-size:17px;padding:5px 3px}.addbtn,.primary{border:0;background:var(--green);color:white;border-radius:12px;padding:11px 14px;font-weight:700}.addbtn{font-size:12px;padding:8px 11px}.secondary{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:10px 12px;font-weight:650}
+.foodbox{margin-top:12px;background:#f0f7f3;border:1px solid #d8e9df;border-radius:16px;padding:14px}.foodbox h3{margin:0 0 5px;font-size:14px}.foodbox p{margin:0;color:#63766c;font-size:12px}.foodnumbers{display:flex;justify-content:space-between;gap:10px;margin-top:12px}.foodnumbers strong{font-size:18px;color:var(--green)}.foodnumbers small{display:block;color:var(--muted);font-size:10px}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}.tools button{font-size:12px}
+.month-summary{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;margin-top:18px}.sumrow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #eff3f0;font-size:13px}.sumrow:last-child{border:0;font-weight:800}.muted{color:var(--muted)}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin:14px 3px}
+.modal-back{display:none;position:fixed;inset:0;background:#14251f88;z-index:10;align-items:flex-end;justify-content:center;padding:12px}.modal-back.show{display:flex}.modal{background:white;border-radius:20px 20px 16px 16px;padding:18px;width:min(100%,480px);max-height:90vh;overflow:auto}.modal h2{font-size:18px;margin:0 0 14px}.field{display:block;margin:12px 0}.field span{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;border:1px solid #dce5df;border-radius:11px;padding:12px;background:white;color:var(--ink)}.modal-actions{display:flex;gap:8px;margin-top:16px}.modal-actions button{flex:1}.danger{border:1px solid #f0d2d2;background:#fff5f5;color:#a83232;border-radius:11px;padding:10px 12px;font-weight:700}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#203b31;color:white;padding:10px 15px;border-radius:30px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}.toast.show{opacity:1}
+.empty{text-align:center;color:var(--muted);padding:15px;font-size:12px}
+@media(min-width:600px){main{padding:22px}.summary{grid-template-columns:repeat(4,1fr)}header{padding:28px 24px}.income-row{max-width:420px}}
+@media print{body{background:white}.app{max-width:none}header{background:white;color:#123;border:1px solid #ccc}.tabs,.tools,.addbtn,.iconbtn,.check,.note{display:none!important}.group,.metric,.period-head{box-shadow:none;break-inside:avoid}.modal-back{display:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="topline"><div class="brand">MY HOME FINANCES</div><div class="month" id="monthLabel"></div></div>
+ <h1>Household Budget</h1><div class="sub">Two paydays · Two separate 15-day budgets</div>
+ <div class="month-controls"><label for="monthPicker">Choose month:</label><input type="month" id="monthPicker" aria-label="Choose budget month"><button type="button" onclick="loadSelectedMonth()">Open month</button></div>
+ <div class="income-row">
+  <div class="income-card" onclick="editSalary('first')" title="Click to edit 10th payday"><small>10TH PAYDAY (Click to edit)</small><strong id="salaryFirst">₱7,000</strong></div>
+  <div class="income-card" onclick="editSalary('second')" title="Click to edit 25th payday"><small>25TH PAYDAY (Click to edit)</small><strong id="salarySecond">₱7,000</strong></div>
+  <button class="salary-edit-btn" type="button" onclick="editSalary('both')">✎ Edit both paydays</button>
+ </div>
+</header>
+<main>
+ <div class="section-title"><h2>Monthly overview</h2><span id="totalIncomeLabel">₱14,000 total income</span></div>
+ <div class="summary">
+  <div class="metric green"><small>Actual cash left*</small><strong id="actualCash">₱14,000</strong></div>
+  <div class="metric orange"><small>Unpaid expenses</small><strong id="unpaidTotal">₱0</strong></div>
+  <div class="metric"><small>Paid expenses</small><strong id="paidTotal">₱0</strong></div>
+  <div class="metric"><small>Food budget left</small><strong id="foodLeft">₱5,139</strong></div>
+ </div>
+ <div class="tabs">
+  <button class="tab active" data-period="first">10th–24th</button>
+  <button class="tab" data-period="second">25th–9th</button>
+  <button class="tab" data-period="overview">Monthly</button>
+ </div>
+ <section id="periodView">
+  <div class="period-head">
+   <div class="period-head-row"><div><h2 id="periodTitle">First half · 10th–24th</h2><div class="salary">Salary received: ₱7,000</div></div><div class="period-balance"><strong id="periodCash">₱7,000</strong><small>cash left</small></div></div>
+   <div class="progress"><div id="periodProgress"></div></div><div class="progress-label"><span id="progressText">0 of 9 paid</span><span id="progressPct">0%</span></div>
+  </div>
+  <div id="expenseGroups"></div>
+  <div class="foodbox">
+   <h3>🍚 Food & other necessities</h3>
+   <p>This is the amount left after setting aside the listed bills, rice and household supplies. Add food purchases below to track spending.</p>
+   <div class="foodnumbers"><div><small>Starting food budget</small><strong id="foodStart">₱2,685</strong></div><div style="text-align:right"><small>Food budget remaining</small><strong id="foodRemaining">₱2,685</strong></div></div>
+   <div style="margin-top:12px"><button class="addbtn" onclick="openAddFood()">+ Add food / necessity purchase</button></div>
+   <div id="foodPurchases"></div>
+  </div>
+  <div class="tools">
+   <button class="secondary" onclick="openAddExpense()">＋ Add expense</button>
+   <button class="secondary" onclick="exportCSV()">↓ Download CSV</button>
+  </div>
+ </section>
+ <section id="overviewView" style="display:none">
+  <div class="month-summary" id="monthlyRows"></div>
+  <div class="tools">
+   <button class="secondary" onclick="backupData()">Backup data</button>
+   <button class="secondary" onclick="document.getElementById('restoreFile').click()">Restore backup</button>
+   <button class="secondary" onclick="exportCSV()">Download CSV</button>
+   <button class="secondary" onclick="window.print()">Print budget</button>
+   <button class="secondary" onclick="newMonth()">Start new month</button>
+   <button class="secondary" onclick="editSalary('both')">Edit household budget</button>
+  </div>
+  <p class="note">*Actual cash left is calculated from the two salary amounts minus expenses marked as paid. Unpaid expenses remain reserved. Food purchases reduce the food budget as you record them. Your data is saved in this browser on this device.</p>
+ </section>
+ <div class="tools" id="periodTools">
+  <button class="secondary" onclick="backupData()">Backup data</button>
+  <button class="secondary" onclick="document.getElementById('restoreFile').click()">Restore backup</button>
+  <button class="secondary" onclick="window.print()">Print this budget</button>
+  <button class="secondary" onclick="newMonth()">Start new month</button>
+ </div>
+ <input id="restoreFile" type="file" accept=".json,application/json" hidden>
+</main>
+</div>
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()">
+ <div class="modal"><h2 id="modalTitle">Add expense</h2>
+  <label class="field"><span>Expense name</span><input id="fName" placeholder="e.g. Vegetables"></label>
+  <label class="field"><span>Amount (₱)</span><input id="fAmount" type="number" min="0" step="0.01" placeholder="0.00"></label>
+  <label class="field"><span>Category</span><select id="fCategory"><option value="Bills">Bills</option><option value="Hygiene & household">Hygiene & household</option><option value="Food">Food</option><option value="Other">Other</option></select></label>
+  <label class="field"><span>Due date / note (optional)</span><input id="fDue" placeholder="e.g. Due every 14th"></label>
+  <div class="modal-actions"><button class="danger" id="deleteBtn" style="display:none" onclick="deleteExpense()">Delete</button><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveExpense()">Save</button></div>
+ </div>
+</div>
+
+<div class="modal-back" id="salaryModal" onclick="if(event.target===this)closeSalaryModal()">
+ <div class="modal" role="dialog" aria-modal="true" aria-labelledby="salaryModalTitle">
+  <h2 id="salaryModalTitle">Edit household budget</h2>
+  <div id="fieldFirstGroup" class="field">
+   <span>10th Payday budget / salary (₱)</span>
+   <input id="salaryFirstInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="7000">
+  </div>
+  <div id="fieldSecondGroup" class="field">
+   <span>25th Payday budget / salary (₱)</span>
+   <input id="salarySecondInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="7000">
+  </div>
+  <p class="note">Maaari mong baguhin ang isa lamang nang hindi naaapektuhan ang kabila.</p>
+  <div class="modal-actions">
+   <button class="secondary" type="button" onclick="closeSalaryModal()">Cancel</button>
+   <button class="primary" type="button" onclick="saveSalary()">Save budget</button>
+  </div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const BASE = {
+ first:[
+  {id:'internet',name:'Internet',amount:800,cat:'Bills',due:'Due every 14th'},
+  {id:'water',name:'Water',amount:1000,cat:'Bills',due:'Due every 14th'},
+  {id:'tiktok',name:'TikTok PayLater',amount:872,cat:'Bills',due:'Due every 15th'},
+  {id:'gas10',name:'Gasoline',amount:800,cat:'Bills',due:'Every 10th'},
+  {id:'sulfur1',name:'Sulfur soap (2 pcs)',amount:116,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'shampoo1',name:'Shampoo reserve',amount:36,cat:'Hygiene & household',due:'Half of monthly ₱72'},
+  {id:'surf1',name:'Surf detergent (10 sachets)',amount:67,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'fab1',name:'Fabric conditioner (10 sachets)',amount:67,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'dish1',name:'Dishwashing soap (1 bottle)',amount:27,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'rice1',name:'Rice (2 sacks)',amount:530,cat:'Food',due:'2 × ₱265'}
+ ],
+ second:[
+  {id:'shopee',name:'Shopee PayLater',amount:203,cat:'Bills',due:'Due every 5th'},
+  {id:'rent',name:'House rent',amount:1200,cat:'Bills',due:'Due every 5th'},
+  {id:'electric',name:'Electricity',amount:1500,cat:'Bills',due:'Every 25th'},
+  {id:'gas25',name:'Gasoline',amount:800,cat:'Bills',due:'Every 25th'},
+  {id:'sulfur2',name:'Sulfur soap (2 pcs)',amount:116,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'shampoo2',name:'Shampoo reserve',amount:36,cat:'Hygiene & household',due:'Half of monthly ₱72'},
+  {id:'surf2',name:'Surf detergent (10 sachets)',amount:67,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'fab2',name:'Fabric conditioner (10 sachets)',amount:67,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'dish2',name:'Dishwashing soap (1 bottle)',amount:27,cat:'Hygiene & household',due:'15-day supply'},
+  {id:'rice2',name:'Rice (2 sacks)',amount:530,cat:'Food',due:'2 × ₱265'}
+ ]
+};
+const STORAGE='householdBudgetOffline_v1';
+let state=loadState(),period='first',editing=null;
+
+function fresh(){
+ return {
+  month:new Date().toISOString().slice(0,7),
+  salaryFirst:7000,
+  salarySecond:7000,
+  first:BASE.first.map(x=>({...x,paid:false,paidDate:''})),
+  second:BASE.second.map(x=>({...x,paid:false,paidDate:''})),
+  food:{first:[],second:[]},
+  history:[]
+ };
+}
+
+function normalizeSalaries(obj){
+ const fallback=Number(obj.salary??7000);
+ obj.salaryFirst=obj.salaryFirst!==undefined?Number(obj.salaryFirst):fallback;
+ obj.salarySecond=obj.salarySecond!==undefined?Number(obj.salarySecond):fallback;
+ return obj;
+}
+
+function loadState(){
+ try{
+  let s=JSON.parse(localStorage.getItem(STORAGE));
+  if(s&&s.first&&s.second&&s.food){
+   s.history=s.history||[];
+   return normalizeSalaries(s);
+  }
+ }catch(e){}
+ return fresh();
+}
+
+function getPaydaySalary(p){
+ return Number(p==='first'?state.salaryFirst:state.salarySecond)||0;
+}
+
+function getTotalIncome(){
+ return getPaydaySalary('first')+getPaydaySalary('second');
+}
+
+function save(){
+ state.history=state.history||[];
+ const snapshot={
+  month:state.month,
+  salaryFirst:state.salaryFirst,
+  salarySecond:state.salarySecond,
+  data:{first:state.first,second:state.second,food:state.food}
+ };
+ const i=state.history.findIndex(h=>h.month===state.month);
+ if(i>=0)state.history[i]=snapshot;else state.history.push(snapshot);
+ state.history.sort((a,b)=>a.month.localeCompare(b.month));
+ localStorage.setItem(STORAGE,JSON.stringify(state));render();
+}
+
+function peso(n){return '₱'+Number(n||0).toLocaleString('en-PH',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function money(arr){return arr.reduce((s,x)=>s+Number(x.amount||0),0);}
+function list(p){return state[p];}
+function foodSpent(p){return money(state.food[p]);}
+function allocated(p){return money(list(p));}
+function foodAllowance(p){return Math.max(0,getPaydaySalary(p)-allocated(p));}
+function paidAmount(p){return money(list(p).filter(x=>x.paid))+money(state.food[p].filter(x=>x.paid));}
+function unpaidAmount(p){return money(list(p).filter(x=>!x.paid))+money(state.food[p].filter(x=>!x.paid));}
+function cashLeft(p){return getPaydaySalary(p)-paidAmount(p);}
+function fmtMonth(m){let [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString('en-PH',{month:'long',year:'numeric'});}
+
+function render(){
+ const sal1=getPaydaySalary('first'), sal2=getPaydaySalary('second'), totalInc=getTotalIncome();
+ document.getElementById('monthLabel').textContent=fmtMonth(state.month);
+ document.getElementById('salaryFirst').textContent=peso(sal1);
+ document.getElementById('salarySecond').textContent=peso(sal2);
+ document.getElementById('totalIncomeLabel').textContent=peso(totalInc)+' total income';
+ let allPaid=paidAmount('first')+paidAmount('second'), allUnpaid=unpaidAmount('first')+unpaidAmount('second');
+ document.getElementById('actualCash').textContent=peso(totalInc-allPaid);
+ document.getElementById('unpaidTotal').textContent=peso(allUnpaid);
+ document.getElementById('paidTotal').textContent=peso(allPaid);
+ document.getElementById('foodLeft').textContent=peso(foodAllowance('first')+foodAllowance('second')-foodSpent('first')-foodSpent('second'));
+ if(period==='overview'){document.getElementById('periodView').style.display='none';document.getElementById('overviewView').style.display='block';document.getElementById('periodTools').style.display='none';renderOverview();return;}
+ document.getElementById('periodView').style.display='block';document.getElementById('overviewView').style.display='none';document.getElementById('periodTools').style.display='grid';
+ let p=period,arr=list(p),paid=arr.filter(x=>x.paid).length,total=arr.length;
+ document.getElementById('periodTitle').textContent=p==='first'?'First half · 10th–24th':'Second half · 25th–9th';
+ document.querySelector('.salary').textContent='Salary received: '+peso(getPaydaySalary(p));
+ document.getElementById('periodCash').textContent=peso(cashLeft(p));
+ document.getElementById('periodProgress').style.width=(total?paid/total*100:0)+'%';
+ document.getElementById('progressText').textContent=paid+' of '+total+' paid';
+ document.getElementById('progressPct').textContent=Math.round(total?paid/total*100:0)+'%';
+ document.getElementById('foodStart').textContent=peso(foodAllowance(p));
+ document.getElementById('foodRemaining').textContent=peso(foodAllowance(p)-foodSpent(p));
+ let cats=['Bills','Hygiene & household','Food','Other'];
+ document.getElementById('expenseGroups').innerHTML=cats.map(cat=>{
+  let items=arr.filter(x=>x.cat===cat);if(!items.length)return '';
+  return `<div class="group"><h3>${cat}</h3>${items.map(x=>expenseHTML(x,p)).join('')}</div>`;
+ }).join('');
+ let purchases=state.food[p];
+ document.getElementById('foodPurchases').innerHTML=purchases.length?`<div style="margin-top:10px;border-top:1px solid #d8e9df">${purchases.map(x=>expenseHTML(x,p,true)).join('')}</div>`:'<div class="empty">No food purchases recorded yet.</div>';
+ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.period===period));
+}
+
+function expenseHTML(x,p,isFoodPurchase=false){
+ return `<div class="expense ${x.paid?'done':''}">
+ <input class="check" type="checkbox" ${x.paid?'checked':''} aria-label="Mark ${esc(x.name)} paid" onchange="togglePaid('${p}','${x.id}',${isFoodPurchase})">
+ <div class="expense-info"><span class="expense-name">${esc(x.name)}</span><span class="expense-meta">${esc(x.due|| (x.paidDate?'Paid '+x.paidDate:'Tap checkbox when paid'))}${x.paidDate&&x.paid?' · Paid '+esc(x.paidDate):''}</span></div>
+ <span class="amount">${peso(x.amount)}</span><span class="status">${x.paid?'PAID':'UNPAID'}</span>
+ <button class="iconbtn" onclick="editItem('${p}','${x.id}',${isFoodPurchase})" aria-label="Edit">⋯</button>
+ </div>`;
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function togglePaid(p,id,isFood){let arr=isFood?state.food[p]:state[p],x=arr.find(z=>z.id===id);if(!x)return;x.paid=!x.paid;x.paidDate=x.paid?new Date().toLocaleDateString('en-PH') : '';save();toast(x.paid?'Marked as paid':'Marked as unpaid');}
+function switchPeriod(p){period=p;render();}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchPeriod(b.dataset.period)));
+function openModal(title='Add expense'){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBack').classList.add('show');}
+function closeModal(){document.getElementById('modalBack').classList.remove('show');editing=null;}
+function openAddExpense(){editing={p:period,isFood:false,id:null};document.getElementById('deleteBtn').style.display='none';document.getElementById('fName').value='';document.getElementById('fAmount').value='';document.getElementById('fCategory').value='Other';document.getElementById('fDue').value='';openModal();}
+function openAddFood(){editing={p:period,isFood:true,id:null};document.getElementById('deleteBtn').style.display='none';document.getElementById('fName').value='';document.getElementById('fAmount').value='';document.getElementById('fCategory').value='Food';document.getElementById('fDue').value='Food purchase';openModal('Add food / necessity purchase');}
+function editItem(p,id,isFood){document.getElementById('deleteBtn').style.display='block';let x=(isFood?state.food[p]:state[p]).find(z=>z.id===id);if(!x)return;editing={p,isFood,id};document.getElementById('fName').value=x.name;document.getElementById('fAmount').value=x.amount;document.getElementById('fCategory').value=x.cat||'Other';document.getElementById('fDue').value=x.due||'';openModal('Edit expense');}
+function deleteExpense(){
+ if(!editing||!editing.id)return;
+ if(!confirm('Delete this expense?'))return;
+ let arr=editing.isFood?state.food[editing.p]:state[editing.p];
+ let i=arr.findIndex(x=>x.id===editing.id);if(i>=0)arr.splice(i,1);
+ closeModal();save();toast('Expense deleted');
+}
+function saveExpense(){
+ let name=document.getElementById('fName').value.trim(),amount=Number(document.getElementById('fAmount').value);
+ if(!name||!Number.isFinite(amount)||amount<0){toast('Enter an expense name and valid amount');return;}
+ let e=editing||{p:period,isFood:false,id:null},arr=e.isFood?state.food[e.p]:state[e.p];
+ if(e.id){let x=arr.find(z=>z.id===e.id);Object.assign(x,{name,amount,cat:document.getElementById('fCategory').value,due:document.getElementById('fDue').value});}
+ else arr.push({id:'custom_'+Date.now(),name,amount,cat:document.getElementById('fCategory').value,due:document.getElementById('fDue').value,paid:false,paidDate:''});
+ closeModal();save();toast('Expense saved');
+}
+function renderOverview(){
+ const totalInc=getTotalIncome();
+ let rows=[
+ ['Monthly income (10th + 25th)',peso(totalInc)],
+ ['Bills, supplies and rice',peso(allocated('first')+allocated('second'))],
+ ['Food purchases recorded',peso(foodSpent('first')+foodSpent('second'))],
+ ['Paid expenses',peso(paidAmount('first')+paidAmount('second'))],
+ ['Unpaid expenses',peso(unpaidAmount('first')+unpaidAmount('second'))],
+ ['First-half food budget left',peso(foodAllowance('first')-foodSpent('first'))],
+ ['Second-half food budget left',peso(foodAllowance('second')-foodSpent('second'))],
+ ['Actual cash left',peso(totalInc-paidAmount('first')-paidAmount('second'))]
+ ];
+ document.getElementById('monthlyRows').innerHTML='<h3 style="margin:0 0 8px;font-size:15px">'+fmtMonth(state.month)+' summary</h3>'+rows.map((r,i)=>`<div class="sumrow"><span>${r[0]}</span><strong>${r[1]}</strong></div>`).join('');
+}
+function backupData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});download(blob,'Household_Budget_Backup_'+state.month+'.json');toast('Backup downloaded');}
+function exportCSV(){
+ let rows=[['Period','Category','Expense','Amount','Status','Due / note','Paid date']];
+ ['first','second'].forEach(p=>{let label=p==='first'?'10th–24th':'25th–9th';[...state[p],...state.food[p]].forEach(x=>rows.push([label,x.cat||'Food',x.name,x.amount,x.paid?'PAID':'UNPAID',x.due||'',x.paidDate||'']));});
+ let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ download(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),'Household_Budget_'+state.month+'.csv');toast('CSV report downloaded');
+}
+function download(blob,name){let a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+
+document.getElementById('restoreFile').addEventListener('change',async e=>{
+ let f=e.target.files[0];if(!f)return;
+ try{
+  let s=JSON.parse(await f.text());
+  if(!s.first||!s.second||!s.food||(s.salary===undefined&&s.salaryFirst===undefined&&s.salarySecond===undefined))throw Error();
+  s.history=s.history||[];
+  state=normalizeSalaries(s);
+  save();
+  toast('Backup restored');
+ }catch(err){alert('This backup file is not valid.');}
+ e.target.value='';
+});
+
+function monthSnapshot(month){
+ let h=(state.history||[]).find(x=>x.month===month);
+ if(!h)return null;
+ const fallbackSal1=Number(h.salary??state.salaryFirst);
+ const fallbackSal2=Number(h.salary??state.salarySecond);
+ return {
+  month:h.month,
+  salaryFirst:h.salaryFirst!==undefined?Number(h.salaryFirst):fallbackSal1,
+  salarySecond:h.salarySecond!==undefined?Number(h.salarySecond):fallbackSal2,
+  first:(h.data?.first||h.first||[]).map(x=>({...x})),
+  second:(h.data?.second||h.second||[]).map(x=>({...x})),
+  food:{first:(h.data?.food?.first||h.food?.first||[]).map(x=>({...x})),second:(h.data?.food?.second||h.food?.second||[]).map(x=>({...x}))}
+ };
+}
+
+function loadSelectedMonth(){
+ const month=document.getElementById('monthPicker').value;
+ if(!month){toast('Please choose a month');return;}
+ loadMonth(month);
+}
+
+function loadMonth(month){
+ if(!/^\d{4}-\d{2}$/.test(month)){toast('Choose a valid month');return;}
+ const current={
+  month:state.month,
+  salaryFirst:state.salaryFirst,
+  salarySecond:state.salarySecond,
+  data:{first:state.first,second:state.second,food:state.food}
+ };
+ state.history=state.history||[];
+ const ci=state.history.findIndex(h=>h.month===state.month);
+ if(ci>=0)state.history[ci]=current;else state.history.push(current);
+
+ const saved=monthSnapshot(month);
+ if(saved){
+  state.month=saved.month;
+  state.salaryFirst=saved.salaryFirst;
+  state.salarySecond=saved.salarySecond;
+  state.first=saved.first;
+  state.second=saved.second;
+  state.food=saved.food;
+  toast('Saved budget opened');
+ }else{
+  state.month=month;
+  state.first=state.first.map(x=>({...x,paid:false,paidDate:''}));
+  state.second=state.second.map(x=>({...x,paid:false,paidDate:''}));
+  state.food={first:[],second:[]};
+  toast('New monthly budget created');
+ }
+ state.history.sort((a,b)=>a.month.localeCompare(b.month));
+ localStorage.setItem(STORAGE,JSON.stringify(state));period='first';render();
+}
+
+function newMonth(){
+ let n=new Date(state.month+'-01T12:00:00');n.setMonth(n.getMonth()+1);
+ const next=n.toISOString().slice(0,7);
+ if(!confirm('Open '+fmtMonth(next)+'? Your current month will be saved, and the new month will start with unpaid expenses.'))return;
+ loadMonth(next);
+}
+
+function editSalary(target='both'){
+ const input1=document.getElementById('salaryFirstInput');
+ const input2=document.getElementById('salarySecondInput');
+ const group1=document.getElementById('fieldFirstGroup');
+ const group2=document.getElementById('fieldSecondGroup');
+
+ input1.value=String(getPaydaySalary('first'));
+ input2.value=String(getPaydaySalary('second'));
+
+ // Kung isa lang ang kinlik, itago muna ang kabila para mas madali at malinaw
+ if(target==='first'){
+  group1.style.display='block';
+  group2.style.display='none';
+  document.getElementById('salaryModal').dataset.mode='first';
+ }else if(target==='second'){
+  group1.style.display='none';
+  group2.style.display='block';
+  document.getElementById('salaryModal').dataset.mode='second';
+ }else{
+  group1.style.display='block';
+  group2.style.display='block';
+  document.getElementById('salaryModal').dataset.mode='both';
+ }
+
+ document.getElementById('salaryModal').classList.add('show');
+ setTimeout(()=>{
+  if(target==='second'){input2.focus();input2.select();}
+  else{input1.focus();input1.select();}
+ },50);
+}
+
+function closeSalaryModal(){document.getElementById('salaryModal').classList.remove('show');}
+
+function saveSalary(){
+ const mode=document.getElementById('salaryModal').dataset.mode||'both';
+ const input1=document.getElementById('salaryFirstInput');
+ const input2=document.getElementById('salarySecondInput');
+
+ if(mode==='first'||mode==='both'){
+  const raw1=input1.value.trim();
+  const n1=Number(raw1);
+  if(raw1===''||!Number.isFinite(n1)||n1<0){toast('Please enter a valid 10th payday amount');input1.focus();return;}
+  state.salaryFirst=n1;
+ }
+
+ if(mode==='second'||mode==='both'){
+  const raw2=input2.value.trim();
+  const n2=Number(raw2);
+  if(raw2===''||!Number.isFinite(n2)||n2<0){toast('Please enter a valid 25th payday amount');input2.focus();return;}
+  state.salarySecond=n2;
+ }
+
+ save();
+ closeSalaryModal();
+ toast('Household budget updated');
+}
+
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+render();
+</script>
+</body>
+</html>
